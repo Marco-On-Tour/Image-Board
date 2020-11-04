@@ -1,41 +1,36 @@
-new Vue({
+const v = new Vue({
     el: "#main",
     data: {
-        greeting: "Hello",
-        greetee: "World",
-        url: "https://spiced.academy",
-        cities: [
-            {
-                name: "Cologne",
-                country: "Germany",
-            },
-        ],
-    },
-    created: function () {
-        console.log("created");
+        url: "",
+        title: "",
+        desc: "",
+        username: "",
+        file: null,
+        images: [],
     },
     mounted: function () {
         console.log("mounted");
         var self = this;
-        axios.get("/cities").then(function (res) {
-            var cities = res.data.cities;
-            console.log(cities);
-            self.cities = cities;
+        axios.get("/images").then((res) => {
+            console.log(v.images);
+            const images = res.data;
+            this.images = images;
+            console.log(v.images);
         });
     },
-    updated: function () {
-        console.log("updated");
-    },
     methods: {
-        clicker: function () {
-            console.log("clicked!!");
-            this.greetee = "Kitty";
+        submit: function () {
+            console.log(this.title, this.file);
+            var fd = new FormData();
+            fd.append("title", this.title);
+            fd.append("desc", this.desc);
+            fd.append("username", this.username);
+            fd.append("file", this.file);
+            axios.post("/upload", fd);
         },
-        addCologne: function () {
-            this.cities.push({
-                name: "Cologne",
-                country: "Germany",
-            });
+        fileSelected: function (e) {
+            console.log(e.target.files[0]);
+            this.file = e.target.files[0];
         },
     },
 });

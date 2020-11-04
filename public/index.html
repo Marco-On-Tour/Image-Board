@@ -2,16 +2,62 @@
 <html>
 <head>
     <title></title>
+    <style type="text/css">
+    .images {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .image-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 310px;
+        height: 310px;
+        border-radius: 5px;
+        border:1px solid grey;
+    }
+    #file-upload {
+        display: flex;
+        flex-direction: row;
+    }
+    .form-input {
+        margin:1em;
+    }
+    .form-input label, .form-input input {
+        display: block;
+    }
+    </style>
 </head>
 <body>
     <div id="main">
-        <h1 @click.stop="clicker">{{greeting}}, {{greetee}}!!!</h1>
-        <a :href="url" @click.prevent>Click here!</a>
-        <input v-model="greeting">
+        <div id="file-upload">
+            <div class="form-input">
+                <label for="title">title:</label>
+                <input type="text" name="title" type="text" :value="title" required minlength="5"/>
+            </div>
+            <div class="form-input">
+                <label for="desc">description:</label>
+                <input type="text" name="desc" type="text" :value="desc" required minlength="5"/>
+            </div>
+            <div class="form-input">
+                <label for="username">user name:</label>
+                <input type="text" name="username" :value="username" required minlength="3" />
+            </div>
+            <div class="form-input">
+                <label for="file">image:</label>
+                <input type="file" name="file" :value="file" @change="fileSelected" accept="image/*" required />
+            </div>
+            <input type="submit" @click="submit">
+        </div>
+        <div class="images" v:if="images">
+            <div class="image-box" v-for="image in images" >
+                <h3 class="title">{{image.title}}</h3>
+                <img :src="image.url" width="300"> 
+            </div>        
+        </div>
 
-        <ul v-if="cities.length > 0">
-            <li v-for="city in cities" v-on:click="addCologne">{{city.name}}, {{city.country}}
-        </ul>
     </div>
 
     <script src="/js/vue.js"></script>
