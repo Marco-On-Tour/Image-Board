@@ -1,11 +1,35 @@
 <!doctype html>
 <html>
 <head>
+
+    <meta charset="utf-8" name="viewport" content="width=device-width" initial-scale="1.0">
+    <title>Imageboard</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    
+    <div id="main">
     <title>Image Board</title>
-</head>
-<body>
+    <input v-model="title">
+    <input v-model="desc">
+    <input v-model="username">
+    <input @change type="file" accept="image/*">
+    <button @click="submit">Submit</button>
+    </div>
+
+    <section class="imageboard">
+
+        <div class="card" v-for="image in images">
+            <a :href="image.url" target="_blank"><img :src="image.url"></a>
+            <div id="title">{{image.title}}</div>
+            <div id="desc">"{{image.description}}"</div>
+            <div id="username">shared by {{image.username}}</div>
+        </div>
+
+    </section>
+
     <script src="/js/vue.js"></script>
     <script src="/js/axios.min.js"></script>
+    <script src="/js/my-component"></script>
     <script src="js/script.js"></script>
 </body>
 </html>

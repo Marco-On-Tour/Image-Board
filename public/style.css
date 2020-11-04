@@ -1,0 +1,27 @@
+* {
+    font-family: "Supria Sans", "Helvetica", sans-serif;
+    font-size: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+.card {
+    border: 2px solid grey;
+    border-radius: 4px; 
+    padding: .5rem;   
+    justify-self: center;
+    align-self: center;
+}
+
+.card img {
+    width: 400px;
+    height: 400px;
+    object-fit: cover;
+}
+
+.imageboard { 
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 450px));
+    grid-gap: 1rem;
+    justify-content: center;
+}
