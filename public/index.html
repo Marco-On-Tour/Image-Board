@@ -3,6 +3,7 @@
 <head>
     <title></title>
     <style type="text/css">
+    
     .images {
         display: flex;
         flex-direction: row;
@@ -35,32 +36,53 @@
         <div id="file-upload">
             <div class="form-input">
                 <label for="title">title:</label>
-                <input type="text" name="title" type="text" :value="title" required minlength="5"/>
+                <input type="text" type="text" v-model="title" />
             </div>
             <div class="form-input">
                 <label for="desc">description:</label>
-                <input type="text" name="desc" type="text" :value="desc" required minlength="5"/>
+                <input type="text" v-model="desc" />
             </div>
             <div class="form-input">
                 <label for="username">user name:</label>
-                <input type="text" name="username" :value="username" required minlength="3" />
+                <input type="text" v-model="username" />
             </div>
             <div class="form-input">
                 <label for="file">image:</label>
-                <input type="file" name="file" :value="file" @change="fileSelected" accept="image/*" required />
+                <input type="file" @change="fileSelected" accept="image/*" required />
             </div>
-            <input type="submit" @click="submit">
+            <div>
+                <input type="submit" @click="submit" :disabled="!canUpload()">
+            </div>
         </div>
-        <div class="images" v:if="images">
-            <div class="image-box" v-for="image in images" >
+
+        <div class="images" v-if="images">
+            <boxed-image :image="image" :width="250" v-for="image in images" v-bind:key="image.id"></boxed-image>
+            <!-- <boxed-image title="image.title" url="image.url" v-for="image in images"> -->
+            <!-- <div class="image-box" v-for="image in images" >
                 <h3 class="title">{{image.title}}</h3>
                 <img :src="image.url" width="300"> 
-            </div>        
+            </div>         -->
         </div>
 
     </div>
-
     <script src="/js/vue.js"></script>
+
+    <template id="boxed-image-template">
+        <div class="image-box">
+            <img :src="image.url" :alt="image.title" :width="width">
+        </div>        
+    </template>
+    <script type="text/javascript">
+        Vue.component('boxed-image', {
+            template: '#boxed-image-template',
+            props: ["image", "width"],
+            methods: {
+                log: function(){
+                    console.log(this.image);
+                }
+            }
+        });
+    </script>
     <script src="/js/axios.min.js"></script>
     <script src="/js/script.js"></script>
 </body>

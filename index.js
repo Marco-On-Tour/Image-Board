@@ -8,7 +8,7 @@ const db = require("./db.js");
 
 const diskStorage = multer.diskStorage({
     destination: function (req, file, callback) {
-        callback(null, __dirname + "/uploads");
+        callback(null, __dirname + "/public/uploads");
     },
     filename: function (req, file, callback) {
         uidSafe(24).then(function (uid) {
@@ -27,9 +27,20 @@ const uploader = multer({
 app.post("/upload", uploader.single("file"), function (req, res) {
     // If nothing went wrong the file is already in the uploads directory
     if (req.file) {
-        res.json({
-            success: true,
-        });
+        const filename = req.file.filename;
+        const { desc, username, title } = req.body;
+        db.insertImage({
+            url: "http://localhost:8080/uploads/" + filename,
+            username,
+            title,
+            desc,
+        })
+            .then(() =>
+                res.json({
+                    success: true,
+                })
+            )
+            .catch(() => res.status(500));
     } else {
         res.json({
             success: false,

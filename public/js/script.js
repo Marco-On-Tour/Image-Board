@@ -2,23 +2,36 @@ const v = new Vue({
     el: "#main",
     data: {
         url: "",
-        title: "",
+        title: "An image",
         desc: "",
         username: "",
         file: null,
-        images: [],
+        images: null,
+    },
+    computed: {
+        // a computed getter
+        reversedTitle: function () {
+            // `this` points to the vm instance
+            return this.title.split("").reverse().join("");
+        },
     },
     mounted: function () {
         console.log("mounted");
         var self = this;
         axios.get("/images").then((res) => {
-            console.log(v.images);
             const images = res.data;
             this.images = images;
-            console.log(v.images);
         });
     },
     methods: {
+        canUpload: function () {
+            const isComplete =
+                this.title.length > 0 &&
+                this.desc.length > 0 &&
+                this.username.length > 0 &&
+                this.file != null;
+            return isComplete;
+        },
         submit: function () {
             console.log(this.title, this.file);
             var fd = new FormData();
@@ -26,7 +39,9 @@ const v = new Vue({
             fd.append("desc", this.desc);
             fd.append("username", this.username);
             fd.append("file", this.file);
-            axios.post("/upload", fd);
+            axios.post("/upload", fd).then((result) => {
+                this.images.push(result.data);
+            });
         },
         fileSelected: function (e) {
             console.log(e.target.files[0]);
