@@ -4,6 +4,8 @@ const db = require("./db.js");
 const multer = require("multer");
 const uidSafe = require("uid-safe");
 const path = require("path");
+const s3 = require("./s3.js")
+const {s3Url} = require("./config.json");
 
 app.use(express.static("./public"));
 
@@ -27,25 +29,51 @@ const uploader = multer({
   },
 });
 
-app.get("/images", (request, response) => {
-  db.getImages()
-    .then((data) => {
-      response.json(data);
+
+//Retreive images
+
+app.get("/images", (req, res) => {
+    db.getImages().then(result => {
+        res.json(result);
     })
-    .catch((error) => {
-      console.log(error);
+});
+
+
+//get image ID
+app.get("/images/" + this.id, (req, res) => {    
+    const {id} = req.params;
+    db.getImageById(id).then(result => {
+        res.json(result);
+        console.log("result", result);
+    })
+});
+
+//store and upload image data
+
+app.post("/upload", uploader.single('file'), s3.upload, (req, res) => {
+    console.log(req.body, req.file);
+    const {username, title, desc} = req.body;
+    const filename = req.file.filename;
+    db.uploadImage(s3Url + filename, username, title, desc).then((result) => {
+        console.log("result", result);
+    })
+    .catch((err) => {
+        console.log(err);
+        res.sendStatus(500);
     });
 });
 
-app.post("/upload", uploader.single("file"), function (request, response) {
-  console.log(request.body, request.file);
-  if (request.file) {
-    console.log("it worked");
+
+
+//app.post("/upload", uploader.single("file"), function (request, response) {
+  //console.log(request.body, request.file);
+  //if (request.file) {
+    //console.log("it worked");
     //it worked
-  } else {
+  //} else {
     //it failed
-    console.log("it failed");
-  }
-});
+    //console.log("it failed");
+  //}
+///});
 
 app.listen(8080, () => console.log("I'm listening"));
