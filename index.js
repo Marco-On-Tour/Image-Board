@@ -56,6 +56,35 @@ app.get("/images/:id", (req, res) => {
         console.log("result", result.rows[0]);
     })
 });
+
+//Retreave a comment
+app.get("/comments/:id", (req,res) => {
+    const {id} = req.params;
+    db.getComments(id).then(result => {
+        console.log("comment", result);
+        res.json(result.rows);
+    })
+});
+//Insert a comment
+app.post("/comments/", (req, res) => {
+    const {comment, username, imageId} = req.body;
+    db.insertComment(username, comment, imageId).then(result => {
+        res.json(result);
+        console.log("comment working", result);
+    })
+    .catch((err) => {
+        console.log(err);
+        res.sendStatus(500);
+    });
+})
+//load more images
+app.get("/moreimages", (req, res) => {
+    db.getMoreImages().then(result => {
+        console.log("moreimages", result);
+        res.json(result);
+    })
+});
+
 //store and upload image data
 
 app.post("/upload", uploader.single('file'), s3.upload, (req, res) => {

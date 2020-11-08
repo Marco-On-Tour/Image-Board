@@ -1,14 +1,14 @@
 
 
 body {
-    font-family: comic-sans;
+    font-family: Georgia, serif;
     margin: 0;
 }
 
 #logo {
     width: 100px;
     height: 100px;
-    margin-left: 20px;
+    margin-left: 60px;
 }
 
 h1 {
@@ -103,4 +103,24 @@ button {
     left: 0;
     top: 0;
     color: white;
+}
+
+/* ---------- comments ---------- */
+
+.comments {
+    text-align: left;
+    margin: 40px;
+    background: #2A292E;
+    padding: 20px;
+    border: solid 2px rgb(255, 255, 255);
+    border-radius: 20px;
+}
+
+.comment-wrapper input {
+    width: 400px;
+    margin-left: 20px;
+}
+
+.comment-wrapper button {
+margin-bottom: 40px;
 }

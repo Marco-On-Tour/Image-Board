@@ -1,3 +1,38 @@
+Vue.component("comment-component", {
+    props: ["id"],
+    data: function () {
+      return {
+        username: "",
+        comments: null,
+        comment: "",
+      };
+    },
+    mounted: function () {
+      console.log("mount", this.id);
+      var self = this;
+      axios.get("/comments/" + self.id).then((res) => {
+          console.log("shows", res.data);
+          comments = res.data;
+          self.comments = comments;
+          console.log("runs others", comments); 
+      });
+    },
+    methods: {
+      submitComment: function () {
+        var self = this;
+        axios.post("/comments/", {
+          imageId: self.id,
+          comment: self.comment,
+          username: self.username
+        }).then((res) => {
+          var newComment = res.data.rows[0];
+          self.comments.unshift(newComment);
+        });
+      },
+    },
+    template: "#comment-template",
+  });
+
 Vue.component('lightbox-component', {
     props: ["id"],
     data: function() {
@@ -6,6 +41,8 @@ Vue.component('lightbox-component', {
             title: "",
             url: "",
             desc: "",
+            username:"",
+            comments: null,
         };
     },
     mounted: function() {
@@ -15,6 +52,7 @@ Vue.component('lightbox-component', {
                 self.title = res.data.title;
                 self.url = res.data.url;
                 self.desc = res.data.description;
+                self.username = res.data.username;
                 console.log(res.data.title);
             });
     },
@@ -71,6 +109,14 @@ new Vue({
                 
             });
         },
+        loadmore: function () {
+            axios.get("/moreimages").then((res) => {
+              var self = this;
+              var moreImages = res.data.rows;
+              self.images.push(moreImages);
+              console.log("moreimages", moreImages);
+            });
+          },
         selectedFile: function (e) {
             console.log(e.target.files[0]);
             this.file = e.target.files[0];

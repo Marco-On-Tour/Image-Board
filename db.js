@@ -4,7 +4,9 @@ const db = spicedPg("postgres:marconewman:@localhost:5432/images");
 exports.initDB = () => {
 
     return db.query(
-        `DROP TABLE IF EXISTS images;
+        `DROP TABLE IF EXISTS comments;
+        DROP TABLE IF EXISTS images;
+        
 
         CREATE TABLE images(
             id SERIAL PRIMARY KEY,
@@ -14,6 +16,16 @@ exports.initDB = () => {
             description TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+
+        CREATE TABLE comments(
+            id SERIAL PRIMARY KEY,
+            username VARCHAR NOT NULL,
+            comment TEXT NOT NULL,
+            imageId INTEGER NOT NULL REFERENCES images(id),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+    
         
         INSERT INTO images (url, username, title, description) VALUES (
             'https://s3.amazonaws.com/imageboard/jAVZmnxnZ-U95ap2-PLliFFF7TO0KqZm.jpg',
@@ -58,3 +70,20 @@ exports.getImageById = (id) => {
         "SELECT * FROM images WHERE id = $1;", [id]
     );
 };
+
+/// add more images
+
+exports.getMoreImages = lastId => db.query(
+    "SELECT * FROM images WHERE id < $1 ORDER BY id DESC LIMIT 12;", [lastId]
+);
+
+///commenting
+
+exports.getComments = imageId => {
+    return db.query("SELECT * FROM comments WHERE imageId = $1;", [imageId]);
+
+};
+
+exports.uploadComment = (comment, imageId, username) => {
+    return db.query ("INSERT INTO comments (comment, imageId, username) VALUES ($1, $2, $3) RETURNING *;",[comment, imageId, username]);
+}
