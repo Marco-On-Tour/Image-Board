@@ -2,87 +2,69 @@
 <html>
 <head>
     <title></title>
-    <style type="text/css">
-    
-    .images {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-    .image-box {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 310px;
-        height: 310px;
-        border-radius: 5px;
-        border:1px solid grey;
-    }
-    #file-upload {
-        display: flex;
-        flex-direction: row;
-    }
-    .form-input {
-        margin:1em;
-    }
-    .form-input label, .form-input input {
-        display: block;
-    }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="main">
-        <div id="file-upload">
-            <div class="form-input">
-                <label for="title">title:</label>
-                <input type="text" type="text" v-model="title" />
-            </div>
-            <div class="form-input">
-                <label for="desc">description:</label>
-                <input type="text" v-model="desc" />
-            </div>
-            <div class="form-input">
-                <label for="username">user name:</label>
-                <input type="text" v-model="username" />
-            </div>
-            <div class="form-input">
-                <label for="file">image:</label>
-                <input type="file" @change="fileSelected" accept="image/*" required />
-            </div>
-            <div>
-                <input type="submit" @click="submit" :disabled="!canUpload()">
-            </div>
-        </div>
+        
 
         <div class="images" v-if="images">
-            <boxed-image :image="image" :width="250" v-for="image in images" v-bind:key="image.id"></boxed-image>
-            <!-- <boxed-image title="image.title" url="image.url" v-for="image in images"> -->
-            <!-- <div class="image-box" v-for="image in images" >
-                <h3 class="title">{{image.title}}</h3>
-                <img :src="image.url" width="300"> 
-            </div>         -->
+            <boxed-image :image="image" 
+                         :width="250" 
+                         v-for="image in images" 
+                         v-bind:key="image.id">
+            </boxed-image>
+            <button style="display:block" @click="loadMore">More</button>
         </div>
+
+
+        <!--
+            the property is named buttonText but vue insists on dashed attribute
+            names, which, in turn, cannot be used in the vue template. All hope 
+            seems lost  But hold on, rescue is near:
+            
+            Vue seems to be able to translate botton-text to buttonText. So instead
+            of using button-text in html and modal.js, or buttonText in both, we
+            are forced to use buttonText in modal.js, and button-text for 
+            the html element attribute. 
+
+            I'm sure there are technical reasons, but jesus, what a great win for 
+            the simplicity department...
+        --> 
+        <modal button-text="Upload a new image">
+            <div id="file-upload">
+                <h2>Image upload</h2>
+                <div class="form-input">
+                    <label for="title">title:</label>
+                    <input type="text" type="text" v-model="title" />
+                </div>
+                <div class="form-input">
+                    <label for="desc">description:</label>
+                    <input type="text" v-model="desc" />
+                </div>
+                <div class="form-input">
+                    <label for="username">user name:</label>
+                    <input type="text" v-model="username" />
+                </div>
+                <div class="form-input">
+                    <label for="file">image:</label>
+                    <input type="file" @change="fileSelected" accept="image/*" required />
+                </div>
+                <hr style="max-width:6em; margin-top:2em; margin-bottom: 2em;">
+                <div class="form-input">
+                    <input type="submit" @click="submit" :disabled="!canUpload()">
+                </div>
+            </div>
+        </modal>
+<!-- 
+        <div class="modal">
+            <p class="modal-content">Lol</p>
+        </div> -->
 
     </div>
     <script src="/js/vue.js"></script>
-
-    <template id="boxed-image-template">
-        <div class="image-box">
-            <img :src="image.url" :alt="image.title" :width="width">
-        </div>        
-    </template>
-    <script type="text/javascript">
-        Vue.component('boxed-image', {
-            template: '#boxed-image-template',
-            props: ["image", "width"],
-            methods: {
-                log: function(){
-                    console.log(this.image);
-                }
-            }
-        });
-    </script>
+    <!-- <script src="js/modal.js"></script> -->
+    <!-- <script src="/js/boxed-image.js"></script> -->
     <script src="/js/axios.min.js"></script>
     <script src="/js/script.js"></script>
 </body>

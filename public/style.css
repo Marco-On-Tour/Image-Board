@@ -1,0 +1,58 @@
+.images {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.image-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 310px;
+    height: 310px;
+    border-radius: 5px;
+    border: 1px solid grey;
+}
+#file-upload {
+    /* clockwise: padding-top, padding-right, padding-bottom, padding-left */
+    padding: 1em 2em 1em 2em;
+}
+.form-input {
+    margin-bottom: 1.05em;
+}
+.form-input label,
+.form-input input {
+    display: block;
+}
+.modal hr {
+    border-top: 1px solid grey;
+    border-bottom: 0;
+    margin-top: 1em;
+}
+.modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(50, 50, 50, 0.2);
+    display: none;
+    flex-direction: column;
+}
+.modal-content {
+    max-width: 90%;
+    min-width: 400px;
+    margin-top: 5em;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: white;
+    /* shamelessly stolen */
+    box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.4),
+        0 4px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 20px;
+}
+button.modal-close {
+    float: right;
+    margin-right: 1em;
+    margin-top: 1em;
+}

@@ -2,20 +2,43 @@ const spicedPg = require("spiced-pg");
 const db = spicedPg("postgres:anna:postgres@localhost:5432/imageboard");
 
 /**
- * @returns {Promise<{id:number, url:string, username:string, title:string, description:string}[]>}
- *
+ * @returns {Promise<any>[]>}
+ * @param {number} imageId
  */
-exports.loadImages = function loadImages() {
+exports.loadComments = function (imageId) {
     return db
-        .query("SELECT id, url, username, title, description FROM images;")
-        .then((result) => {
-            return result.rows.map((row) => ({
-                id: row.id,
-                url: row.url,
+        .query("SELECT * FROM comments WHERE image_id = $1", [imageId])
+        .then((result) =>
+            result.rows.map((row) => ({
+                comment: row.comment,
                 username: row.username,
-                title: row.title,
-                description: row.description,
-            }));
+            }))
+        );
+};
+
+function mapImageRow(row) {
+    return {
+        id: row.id,
+        url: row.url,
+        username: row.username,
+        title: row.title,
+        desc: row.description,
+    };
+}
+exports.loadImages = function loadImages(lastSeenId) {
+    if (!lastSeenId) {
+        lastSeenId = 999999999;
+    }
+    return db
+        .query(
+            `SELECT * FROM images
+             WHERE id < $1
+             ORDER BY id DESC
+             LIMIT 4`,
+            [lastSeenId]
+        )
+        .then((result) => {
+            return result.rows.map((row) => mapImageRow(row));
         });
 };
 /**
