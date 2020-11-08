@@ -12,7 +12,7 @@
     
     <div id="main">
 
-        <img src="" alt="logo" id="logo">
+        <img src="img_roulette_logo_3_black.png" alt="logo" id="logo">
         <h1>Get your image revolver!</h1>  
         
         <div id="imageupload">
@@ -37,7 +37,7 @@
             </div>
 
 
-        <lightbox-component v-if="clickedImageId" :id="clickedImageId">
+        <lightbox-component v-if="clickedImageId" :id="clickedImageId" @close="clickedImageId = false">
 
         </lightbox-component>
 
@@ -46,19 +46,22 @@
             <div class="card" v-for="image in images" @click="clickedImageId = image.id">
                 <img :src="image.url">
                 <div id="title">{{image.title}}</div>
+                
             </div>
 
         </div>
+
 
     </div>
 
     <script id="lightbox-template" type="text/x-template">
 
-        <div class="wrapper">
+        <div class="lightbox-wrapper">
             <div id="lightbox">
+                <img :src="url">
                 <h1>{{heading}}</h1>
                 {{title}}
-                <button>Hide lightbox</button>
+                <button>Close</button>
             </div>
             
         </div>

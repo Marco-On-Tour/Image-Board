@@ -1,11 +1,12 @@
 const express = require("express");
-const app = express();
 const db = require("./db.js");
 const multer = require("multer");
 const uidSafe = require("uid-safe");
 const path = require("path");
 const s3 = require("./s3.js")
 const {s3Url} = require("./config.json");
+
+const app = express();
 
 app.use(express.static("./public"));
 
@@ -30,6 +31,14 @@ const uploader = multer({
 });
 
 
+// init the DB and seed a few records
+
+db.initDB().then(() =>{
+    console.log("init DB done");
+}).catch(err => {
+    console.error(err);
+});
+
 //Retreive images
 
 app.get("/images", (req, res) => {
@@ -40,22 +49,21 @@ app.get("/images", (req, res) => {
 
 
 //get image ID
-app.get("/images/" + this.id, (req, res) => {    
+app.get("/images/:id", (req, res) => {    
     const {id} = req.params;
     db.getImageById(id).then(result => {
-        res.json(result);
-        console.log("result", result);
+        res.json(result.rows[0]);
+        console.log("result", result.rows[0]);
     })
 });
-
 //store and upload image data
 
 app.post("/upload", uploader.single('file'), s3.upload, (req, res) => {
     console.log(req.body, req.file);
     const {username, title, desc} = req.body;
     const filename = req.file.filename;
-    db.uploadImage(s3Url + filename, username, title, desc).then((result) => {
-        console.log("result", result);
+    db.uploadImage(s3Url + filename, username, title, desc).then(result => {
+        res.json(result);
     })
     .catch((err) => {
         console.log(err);
