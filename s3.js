@@ -1,5 +1,5 @@
 const aws = require("aws-sdk");
-const fs = require();
+const fs = require("fs");
 let secrets;
 if (process.env.NODE_ENV == "production") {
     secrets = process.env; // in prod the secrets are environment variables
@@ -11,7 +11,10 @@ const s3 = new aws.S3({
     accessKeyId: secrets.AWS_KEY,
     secretAccessKey: secrets.AWS_SECRET,
 });
-
+const BUCKET_NAME = "spicedling";
+exports.getUrl = (filename) => {
+    return `https://${BUCKET_NAME}.s3.amazonaws.com/${filename}`;
+};
 exports.upload = (req, res, next) => {
     if (!req.file) {
         console.log("multer failed :-/");

@@ -6,6 +6,7 @@ const path = require("path");
 const fs = require("fs");
 const db = require("./db.js");
 const bodyParser = require("body-parser");
+const s3 = require("./s3");
 function group(array, getKey) {
     const result = {};
     for (item of array) {
@@ -35,12 +36,13 @@ const uploader = multer({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.post("/upload", uploader.single("file"), function (req, res) {
+app.post("/upload", uploader.single("file"), s3.upload, function (req, res) {
     // If nothing went wrong the file is already in the uploads directory
     if (req.file) {
         const filename = req.file.filename;
         const { desc, username, title } = req.body;
-        const url = "/uploads/" + filename;
+        // const url = "/uploads/" + filename;
+        const url = s3.getUrl(filename);
         db.insertImage({ url, username, title, desc })
             .then((image) => {
                 image.success = true;
