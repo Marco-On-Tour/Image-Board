@@ -14,10 +14,8 @@
                          v-for="image in images" 
                          v-bind:key="image.id">
             </boxed-image>
-            <button style="display:block" @click="loadMore">More</button>
         </div>
-
-
+        <button id="load-more-button" @click="loadMore">load more images</button>
         <!--
             the property is named buttonText but vue insists on dashed attribute
             names, which, in turn, cannot be used in the vue template. All hope 
@@ -55,6 +53,9 @@
                     <input type="submit" @click="submit" :disabled="!canUpload()">
                 </div>
             </div>
+        </modal>
+        <modal ref="selectedImageModal">
+            <image-comments :image="selectedImage" ref="comments"></image-comments>
         </modal>
 <!-- 
         <div class="modal">

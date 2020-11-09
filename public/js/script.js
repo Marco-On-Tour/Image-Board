@@ -1,8 +1,9 @@
 const imageCommentsComponent = Vue.component("image-comments", {
     template: `
-        <section class="comment-section">
-            <img :src="image.url">
-            <h1>Comments</h1>
+        <section class="comment-section" v-if="image">
+            <h3>{{image.desc}}</h3>
+            <img :src="image.url" class="modal-image">
+            <h3>leave a comment</h3>
             <div class="comment-input">
                 <div class="form-input">
                     <label for="username">User Name:</label>
@@ -16,8 +17,16 @@ const imageCommentsComponent = Vue.component("image-comments", {
                     <input type="submit" @click="send" name="submit" value="submit" />
                 </div>
             </div>
+
+            <div class="comments" v-if="comments">
+                <h3>Here's what others had to say</h3>
+                <div v-for="comment in comments">
+                    <p><em>{{comment.username}}</em> said:<br>{{comment.comment}}</p>
+                    <hr>
+                </div>
+            </div>
         </section>
-    `,
+    `.trim(),
     props: ["image"],
     data: function () {
         return {
@@ -29,36 +38,33 @@ const imageCommentsComponent = Vue.component("image-comments", {
     methods: {
         send: function () {
             const url = `/comments`;
-            const fd = new FormData();
-            fd.append("username", this.username);
-            fd.append("comment", this.comment);
-            fd.append("imageId", this.image.id);
-            axios
-                .post(url, {
-                    username: this.username,
-                    comment: this.comment,
-                    imageId: this.image.id,
-                })
-                .then((response) => {
-                    this.comments.push(response);
-                });
+            const data = {
+                username: this.username,
+                comment: this.comment,
+                imageId: this.image.id,
+            };
+            axios.post(url, data).then((response) => {
+                this.comments.push(response.data);
+            });
         },
-    },
-    mounted: function () {
-        const url = `/images/${this.image.id}/comments`;
-        axios.get(url).then((response) => {
-            this.comments = response.data;
-        });
-        //
+        loadComments() {
+            if (this.image) {
+                const url = `/images/${this.image.id}/comments`;
+                return axios.get(url).then((response) => {
+                    this.comments = response.data;
+                });
+            } else {
+                return Promise.resolve();
+            }
+        },
     },
 });
 
 const boxedImageComponent = Vue.component("boxed-image", {
     template: ` <div class="image-box">
-                    <img :src="image.url" :alt="image.title" :width="width" @click="showModal">
-                    <modal ref="modal">
-                        <image-comments :image="image"></image-comments>
-                    </modal>
+                    <a :href="getHref()">
+                        <img :src="image.url" :alt="image.title" :width="width">
+                    </a>
                 </div>`.trim(),
     props: ["image", "width"],
     methods: {
@@ -67,6 +73,9 @@ const boxedImageComponent = Vue.component("boxed-image", {
         },
         showModal: function () {
             this.$refs.modal.show();
+        },
+        getHref() {
+            return "#" + this.image.id;
         },
     },
 });
@@ -79,7 +88,6 @@ const modalComponent = Vue.component("modal", {
                    <div class="modal" :id="elementId">
                        <div class="modal-content">
                            <button class="modal-close" @click="hide">close</button>
-                           <hr style="clear:both; margin:1em">
                            <slot></slot>
                        </div>
                    </div>
@@ -97,6 +105,7 @@ const modalComponent = Vue.component("modal", {
         hide: function () {
             const ele = document.getElementById(this.elementId);
             ele.style.display = "none";
+            clearHash();
             this.$emit("hidden", this.data);
         },
         show: function () {
@@ -106,7 +115,9 @@ const modalComponent = Vue.component("modal", {
         },
     },
 });
-
+function clearHash() {
+    window.location.hash = "";
+}
 const v = new Vue({
     el: "#main",
     data: {
@@ -116,15 +127,47 @@ const v = new Vue({
         username: "",
         file: null,
         images: null,
+        selectedImage: document.location.hash,
+        selectedImage: null,
     },
+
     mounted: function () {
-        var self = this;
+        window.onhashchange = (evnt) => {
+            const id = Number(window.location.hash.replace("#", ""));
+            if (id) {
+                this.imageSelected(id);
+            } else {
+                this.selectedImage = null;
+            }
+        };
         axios.get("/images").then((res) => {
             const images = res.data;
             this.images = images;
+            if (window.location.hash) {
+                const id = Number(window.location.hash.replace("#", ""));
+                if (id) {
+                    this.imageSelected(id);
+                }
+            }
         });
     },
     methods: {
+        imageSelected: function (imageId) {
+            const id = Number(imageId);
+            return this.loadSingle(id).then((img) => {
+                if (img) {
+                    this.selectedImage = img;
+                    this.$refs.comments.image = img;
+                    this.$refs.comments.loadComments().then(() => {
+                        this.$refs.selectedImageModal.show();
+                    });
+                }
+            });
+        },
+        imageUnselected: function () {
+            clearHash();
+            this.selectedImage = null;
+        },
         canUpload: function () {
             const isComplete =
                 this.title.length > 0 &&
@@ -162,6 +205,20 @@ const v = new Vue({
                     this.images.push(image);
                 }
             });
+        },
+        loadSingle(id) {
+            let image = this.images.find((img) => img.id == id);
+            if (image) {
+                return Promise.resolve(image);
+            } else {
+                const lastId = Number(id) + 1;
+                return axios
+                    .get("/images?lastId=" + lastId)
+                    .then((response) => {
+                        const image = response.data.find((img) => img.id == id);
+                        return image;
+                    });
+            }
         },
     },
 });

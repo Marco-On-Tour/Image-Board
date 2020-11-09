@@ -11,7 +11,19 @@
     width: 310px;
     height: 310px;
     border-radius: 5px;
-    border: 1px solid grey;
+    margin: 5px;
+    /* shamelessly stolen */
+    box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.4),
+        0 4px 20px 0 rgba(0, 0, 0, 0.19);
+    /* border: 1px solid grey; */
+}
+#load-more-button {
+    display: block;
+    width: 300px;
+    height: 110px;
+    margin: 2em;
+    margin-left: auto;
+    margin-right: auto;
 }
 #file-upload {
     /* clockwise: padding-top, padding-right, padding-bottom, padding-left */
@@ -31,6 +43,9 @@
 }
 .modal {
     position: fixed;
+    width: 100%;
+    overflow: scroll;
+
     left: 0;
     top: 0;
     width: 100%;
@@ -42,10 +57,11 @@
 .modal-content {
     max-width: 90%;
     min-width: 400px;
-    margin-top: 5em;
+    margin-top: 1em;
     margin-left: auto;
     margin-right: auto;
     background-color: white;
+    padding: 1em;
     /* shamelessly stolen */
     box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.4),
         0 4px 20px 0 rgba(0, 0, 0, 0.19);
@@ -53,6 +69,9 @@
 }
 button.modal-close {
     float: right;
-    margin-right: 1em;
-    margin-top: 1em;
+    /* margin-right: 1em;
+    margin-top: 1em; */
+}
+.modal-image {
+    max-width: 100%;
 }

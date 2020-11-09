@@ -67,3 +67,23 @@ exports.insertImage = function (image) {
             console.error(error);
         });
 };
+
+exports.insertComment = function (comment) {
+    return db
+        .query(
+            "INSERT INTO comments (image_id, comment, username) VALUES ($1,$2,$3) returning id;",
+            [comment.imageId, comment.comment, comment.username]
+        )
+        .then((result) => {
+            const data = {
+                comment: comment.comment,
+                username: comment.username,
+                id: result.rows[0].id,
+            };
+            return data;
+        })
+        .catch((error) => {
+            console.log(error);
+            return Promise.reject(error);
+        });
+};

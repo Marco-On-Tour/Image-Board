@@ -5,6 +5,7 @@ const uidSafe = require("uid-safe");
 const path = require("path");
 const fs = require("fs");
 const db = require("./db.js");
+const bodyParser = require("body-parser");
 function group(array, getKey) {
     const result = {};
     for (item of array) {
@@ -13,7 +14,6 @@ function group(array, getKey) {
     }
     return result;
 }
-
 const diskStorage = multer.diskStorage({
     destination: function (req, file, callback) {
         callback(null, __dirname + "/public/uploads");
@@ -31,6 +31,9 @@ const uploader = multer({
         fileSize: 2097152,
     },
 });
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.post("/upload", uploader.single("file"), function (req, res) {
     // If nothing went wrong the file is already in the uploads directory
@@ -51,6 +54,10 @@ app.post("/upload", uploader.single("file"), function (req, res) {
     }
 });
 
+// app.get("/image/:imageId", (req, resp) => {
+//     const imageId = Number(req.)
+// });
+
 app.get("/images", (req, resp) => {
     // turn "1" into 1
     const lastSeenId = Number(req.query.lastId);
@@ -62,20 +69,16 @@ app.get("/images", (req, resp) => {
 });
 
 app.get("/images/:imageId/comments", (req, resp) => {
-    return db.loadComments(req.imageId).then((result) => resp.json(result));
+    return db
+        .loadComments(req.params.imageId)
+        .then((result) => resp.json(result));
 });
 
 app.post("/comments", (req, resp) => {
-    console.log(req.body);
     const { comment, username, imageId } = req.body;
     return db
-        .query(
-            "INSERT INTO comments (image_id, comment, username) VALUES ($1,$2,$3) returning id;"
-        )
-        .then((result) => {
-            const data = { imageId, comment, username, id: result.rows[0].id };
-            return resp.json(data);
-        });
+        .insertComment({ comment, username, imageId })
+        .then((result) => resp.json(result));
 });
 
 app.use(express.static("./public"));
