@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>Image-roulette</title>
+    <title>Imageboard</title>
     <meta name="viewport" content="width=device-width" initial-scale="1">
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
@@ -13,7 +13,7 @@
     <div id="main">
 
         <img src="img_roulette_logo_3_black.png" alt="logo" id="logo">
-        <h1>Get your image revolver!</h1>  
+        <h1>{{greeting}}</h1>  
         
         <div id="imageupload">
         
@@ -27,67 +27,60 @@
                 </div>
                 <div>
                     <label for="username">Username:</label>
-                    <input v-model="username" name="username" type="text" placeholder="Shared by">
+                    <input v-model="username" name="username" type="text" placeholder="Your username">
                 </div>
                 <div>
                     <input type="file" accept="image/*" name="file" @change="selectedFile">
                 </div>
                 <button @click="submit">Submit</button>
 
-            </div>
+        </div>
 
 
-        <lightbox-component v-if="clickedImageId" :id="clickedImageId" @close="clickedImageId = false">
-
-        </lightbox-component>
+        <lightbox-component v-if="clickedImageId" :id="clickedImageId" @close="clickedImageId = false"></lightbox-component>
 
         <div id="imageboard">
 
             <div class="card" v-for="image in images" @click="clickedImageId = image.id">
                 <img :src="image.url">
                 <div id="title">{{image.title}}</div>
-                
-            </div>
-
-        </div>
-
-        <div id="more">
-            <button @click="loadmore">More</button>
-        </div>
-
-
-    </div>
-
-    <script id="lightbox-template" type="text/x-template">
-
-        <div class="lightbox-wrapper">
-            <div id="lightbox">
-                <div>
-                <img :src="url">
-                </div>
-
-                <div id="userinput">
-                    <div class="headline">Title:</div>
-                    <div>{{title}}</div>
-                    <div class="headline">Description:</div>
-                    <div>{{desc}}</div>
-                    <div class="headline">Posted by:</div>
-                    <div>{{username}}</div>          
-
-                    <div @click="$emit('close')" id="close">ⓧ</div>  
-                    
-                </div>
-
-            </div>
-            <comment-component :id="id" v-bind:comments="comments"></comment-component>
-        </div>
-
             </div>
             
         </div>
-    </script>
+        
+        <div id="more">
+            <button @click="loadmore">More</button>
+        </div>
+        
+    </div>
 
-    <!--comment script-->
+    <script id="window" type="text/x-template">
+
+        <div class="lightbox-wrapper">          
+
+            <div id="userinput-wrapper">
+                <div id="inner-wrapper">
+                    <div>
+                        <img :src="url">
+                    </div>
+                    <div id="userinput">
+                        <div class="headline">Title:</div>
+                        <div>{{title}}</div>
+                        <div class="headline">Description:</div>
+                        <div>{{desc}}</div>
+                        <div class="headline">Shared by:</div>
+                        <div>{{username}}</div>          
+
+                        <div @click="$emit('close')" id="close">Close</div>                       
+
+                    </div>                         
+                    
+                </div>
+                <comment-component :id="id" v-bind:comments="comments"></comment-component>
+            </div>
+        </div>
+
+    </script>
 
     <script id="comment-template" type="text/x-template">
         <div class="comment-wrapper">
@@ -101,15 +94,14 @@
                 <input v-model="comment" name="comment" type="text" placeholder="Add your comment">
             </div>
             <button @click="submitComment">Submit</button>
-            <div v-for="comment in comments"></div>
-                <div class="comments"></div>
-                    <div>Commented by: {{comment.username}} </div>
+            <div v-for="comment in comments">
+                <div class="comments">
+                    <div>Commentator: {{comment.username}} </div>
                     <div>Comment: {{comment.comment}} </div>
                 <div>
             </div>
         </div>
     </script>
-
 
     <script src="/js/vue.js"></script>
     <script src="/js/axios.min.js"></script>

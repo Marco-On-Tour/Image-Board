@@ -68,7 +68,7 @@ app.get("/comments/:id", (req,res) => {
 //Insert a comment
 app.post("/comments/", (req, res) => {
     const {comment, username, imageId} = req.body;
-    db.insertComment(username, comment, imageId).then(result => {
+    db.uploadComment(username, comment, imageId).then(result => {
         res.json(result);
         console.log("comment working", result);
     })

@@ -84,6 +84,6 @@ exports.getComments = imageId => {
 
 };
 
-exports.uploadComment = (comment, imageId, username) => {
-    return db.query ("INSERT INTO comments (comment, imageId, username) VALUES ($1, $2, $3) RETURNING *;",[comment, imageId, username]);
+exports.uploadComment = (username, comment, imageId) => {
+    return db.query ("INSERT INTO comments (username, comment, imageId) VALUES ($1, $2, $3) RETURNING *;",[username, comment, imageId]);
 }

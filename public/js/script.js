@@ -10,8 +10,9 @@ Vue.component("comment-component", {
     mounted: function () {
       console.log("mount", this.id);
       var self = this;
+      console.log("commentation", this.id);
       axios.get("/comments/" + self.id).then((res) => {
-          console.log("shows", res.data);
+          
           comments = res.data;
           self.comments = comments;
           console.log("runs others", comments); 
@@ -20,12 +21,14 @@ Vue.component("comment-component", {
     methods: {
       submitComment: function () {
         var self = this;
+        console.log("Here we are",this.comment);
         axios.post("/comments/", {
           imageId: self.id,
           comment: self.comment,
           username: self.username
         }).then((res) => {
           var newComment = res.data.rows[0];
+          
           self.comments.unshift(newComment);
         });
       },
@@ -56,7 +59,7 @@ Vue.component('lightbox-component', {
                 console.log(res.data.title);
             });
     },
-    template: '#lightbox-template',
+    template: '#window',
 });
 
 
